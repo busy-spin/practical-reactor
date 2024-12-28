@@ -42,7 +42,7 @@ public class c6_CombiningPublishers extends CombiningPublishersBase {
         //todo: feel free to change code as you need
         Mono<String> currentUserEmail = null;
         Mono<String> currentUserMono = getCurrentUser();
-        getUserEmail(null);
+        currentUserEmail = currentUserMono.flatMap(this::getUserEmail);
 
         //don't change below this line
         StepVerifier.create(currentUserEmail)
@@ -61,7 +61,7 @@ public class c6_CombiningPublishers extends CombiningPublishersBase {
     public void task_executor() {
         //todo: feel free to change code as you need
         Flux<Void> tasks = null;
-        taskExecutor();
+        tasks = taskExecutor().flatMap(task -> task);
 
         //don't change below this line
         StepVerifier.create(tasks)
@@ -80,7 +80,7 @@ public class c6_CombiningPublishers extends CombiningPublishersBase {
     public void streaming_service() {
         //todo: feel free to change code as you need
         Flux<Message> messageFlux = null;
-        streamingService();
+        messageFlux = streamingService().flatMapMany(flux -> flux);
 
         //don't change below this line
         StepVerifier.create(messageFlux)
@@ -99,8 +99,7 @@ public class c6_CombiningPublishers extends CombiningPublishersBase {
     public void i_am_rubber_you_are_glue() {
         //todo: feel free to change code as you need
         Flux<Integer> numbers = null;
-        numberService1();
-        numberService2();
+        numbers = Flux.concat(numberService1(), numberService2());
 
         //don't change below this line
         StepVerifier.create(numbers)
@@ -125,7 +124,7 @@ public class c6_CombiningPublishers extends CombiningPublishersBase {
     public void task_executor_again() {
         //todo: feel free to change code as you need
         Flux<Void> tasks = null;
-        taskExecutor();
+        tasks = taskExecutor().concatMap(mono -> mono);
 
         //don't change below this line
         StepVerifier.create(tasks)
@@ -145,6 +144,7 @@ public class c6_CombiningPublishers extends CombiningPublishersBase {
         Flux<String> stonks = null;
         getStocksGrpc();
         getStocksRest();
+        stonks = Flux.firstWithValue(getStocksGrpc(), getStocksRest());
 
         //don't change below this line
         StepVerifier.create(stonks)
@@ -163,6 +163,8 @@ public class c6_CombiningPublishers extends CombiningPublishersBase {
         Flux<String> stonks = null;
         getStocksLocalCache();
         getStocksRest();
+
+        stonks = getStocksLocalCache().switchIfEmpty(getStocksRest());
 
         //don't change below this line
         StepVerifier.create(stonks)
